@@ -1,0 +1,35 @@
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ─── Virtual Environment ───
+venv/
+.venv/
+env/
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Data (generated at runtime, not source code) ───
+data/*.db
+
+# ─── Models (auto-downloaded, too large for Git) ───
+merged_model/
+
+# ─── OS ───
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Logs ───
+*.log
+
+# ─── Settings (user-specific, lives in ~/.jarvis/) ───
+# settings.json is stored in ~/.jarvis/, not in the repo
