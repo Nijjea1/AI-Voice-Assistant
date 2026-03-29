@@ -15,42 +15,5 @@
 #   - importlib, pkgutil (plugin discovery)
 #   - json, os, typing
 
-# ─── Phase 2 (coming next) ───
-# requests                     # HTTP client for Ollama API
-# PySide6>=6.10.0              # Qt GUI framework (needed for settings_store QObject)
-
-# ─── Phase 3 ───
-# kokoro>=0.9.4                # Kokoro TTS engine
-# sounddevice>=0.5.0           # Audio playback
-# soundfile>=0.13.0            # Audio file I/O
-# numpy>=2.0.0                 # Audio array processing
-# misaki[en]>=0.3.0            # English phoneme processing for Kokoro
-
-# ─── Phase 4 ───
-# transformers>=4.57.0         # HuggingFace (router model)
-# accelerate>=1.12.0           # Model loading optimization
-# safetensors>=0.7.0           # Fast model weight loading
-# huggingface-hub>=0.36.0      # Auto-download router model
-# python-kasa>=0.10.0          # TP-Link smart home
-# duckduckgo-search>=8.0.0     # Web search
-
-# ─── Phase 5 ───
-# PySide6>=6.10.0              # Qt GUI
-# PySide6-Fluent-Widgets>=1.10.0  # Windows 11 Fluent Design
-# darkdetect>=0.8.0            # System theme detection
-# markdown>=3.4.0              # Render markdown in chat
-# pygments>=2.15.0             # Syntax highlighting
-
-# ─── Phase 6 ───
-# realtimestt>=0.3.0           # Real-time speech-to-text
-# PyAudio>=0.2.14              # Microphone access
-
-# ─── Phase 7 ───
-# playwright>=1.57.0           # Browser automation
-
-# ─── System ───
-# psutil>=7.0.0                # CPU/RAM monitoring
-# pynvml>=13.0.0               # GPU monitoring
-
-# NOTE: PyTorch must be installed separately with CUDA support:
-#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+#Phase 2
+requests>=2.32.0               # HTTP client for Ollama API
