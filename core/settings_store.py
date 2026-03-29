@@ -38,7 +38,7 @@ DEFAULT_SETTINGS = {
     },
 
     "general":{
-        max_history": 20,
+        "max_history": 20,
     },
 
     "weather":{
@@ -53,7 +53,7 @@ class SettingsStore:
     Settings Manager that sends info to JSON
     We use dot notation for nested access like "settings.get"
     """
-     def __init__(self):
+    def __init__(self):
         # RLock = "reentrant lock" — the same thread can lock it multiple
         # times without deadlocking. Regular Lock would freeze if the same
         # thread tried to lock it twice.
