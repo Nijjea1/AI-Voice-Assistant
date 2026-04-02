@@ -43,9 +43,10 @@ HF_ROUTER_REPO = "nlouis/pocket-ai-router"
 # Voices: af_heart (American female), bf_emma (British female),
 #          am_adam (American male), bm_george (British male), etc.
 # Full list: https://huggingface.co/hexgrad/Kokoro-82M
-KOKORO_VOICE = "bf_emma"              # British female — clear and natural
+KOKORO_VOICE = "bm_george"              # British male — clear and natural like Jarvis
 KOKORO_LANG = "b"                     # 'a' = American, 'b' = British
 KOKORO_SAMPLE_RATE = 24000            # Kokoro outputs audio at 24kHz
+KOKORO_SPEED = 1.1                     # 0.5-2.0, default 1.0. Talking speed.
 
 # ─────────────────────────────────────────────
 # STT — Speech-to-Text

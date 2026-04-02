@@ -64,6 +64,7 @@ def main():
     print(f"\n{GREEN}{'─'*50}{RESET}")
     print(f"\n{CYAN}Commands:{RESET}")
     print(f"  Type a message to chat with Jarvis")
+    print(f"  'voice'      — toggle TTS on/off")
     print(f"  'clear'      — reset conversation")
     print(f"  'status'     — show model status")
     print(f"  'quit'       — exit")
@@ -93,6 +94,10 @@ def main():
                 _print_status()
                 continue
 
+            if user_input.lower() == "voice":
+                _toggle_voice()
+                continue
+                
             # Send to Dispatcher — streams response from Ollama
             dispatcher.process(user_input)
 
@@ -117,6 +122,18 @@ def _print_status():
     print(f"  Ollama models loaded: {running if running else 'none'}")
     print()
 
+def _toggle_voice():
+    """Toggle TTS on or off."""
+    from core.tts import tts_engine
+
+    if tts_engine.enabled:
+        tts_engine.toggle(False)
+    else:
+        print(f"{CYAN}[TTS] Loading voice model (first time may take a moment)...{RESET}")
+        if tts_engine.toggle(True):
+            print(f"{GREEN}[TTS] ✓ Voice is ON. Jarvis will speak responses.{RESET}")
+        else:
+            print(f"{YELLOW}[TTS] ✗ Could not enable voice.{RESET}")
 
 if __name__ == "__main__":
     main()

@@ -57,6 +57,57 @@ from config import (
 )
 from core.model_manager import ensure_qwen_loaded, mark_qwen_used
 
+class SentenceBuffer:
+    """
+    Collects streaming text tokens and extracts complete sentences.
+    
+    Looks for sentence-ending characters (. ! ?) followed by a space
+    or end of text. Not perfect (mishandles "Dr. Smith") but good
+    enough for TTS purposes.
+    """
+    
+    ENDINGS = ".!?"
+    
+    def __init__(self):
+        self.buffer = ""
+    
+    def add(self, text: str) -> list:
+        """
+        Add a chunk of text. Returns a list of complete sentences found.
+        
+        Example:
+            buf = SentenceBuffer()
+            buf.add("The weather")           → []
+            buf.add(" is sunny. It will")    → ["The weather is sunny."]
+            buf.add(" rain tomorrow.")       → ["It will rain tomorrow."]
+        """
+        self.buffer += text
+        sentences = []
+        
+        while True:
+            end_idx = -1
+            for i, char in enumerate(self.buffer):
+                if char in self.ENDINGS:
+                    if i + 1 >= len(self.buffer) or self.buffer[i + 1] == " ":
+                        end_idx = i + 1
+                        break
+            
+            if end_idx == -1:
+                break
+            
+            sentence = self.buffer[:end_idx].strip()
+            self.buffer = self.buffer[end_idx:].lstrip()
+            
+            if sentence:
+                sentences.append(sentence)
+        
+        return sentences
+    
+    def flush(self) -> str:
+        """Return whatever is left in the buffer (final incomplete sentence)."""
+        remaining = self.buffer.strip()
+        self.buffer = ""
+        return remaining if remaining else None
 
 class Dispatcher:
     """
@@ -151,6 +202,9 @@ class Dispatcher:
         }
         
         full_response = ""
+
+        sentence_buffer = SentenceBuffer()
+        from core.tts import tts_engine
         
         try:
             # Make the HTTP request
@@ -185,11 +239,20 @@ class Dispatcher:
                             # Print this token immediately
                             print(content, end="", flush=True)
                             full_response += content
+                            
+                            # Feed to sentence buffer this queues complete sentences for TTS
+                            complete_sentences = sentence_buffer.add(content)
+                            for sentence in complete_sentences:
+                                tts_engine.queue_sentence(sentence)
                         
                     except json.JSONDecodeError:
                         # Malformed line — skip it
                         continue
                 
+                 # Flush remaining text to TTS
+                remaining = sentence_buffer.flush()
+                if remaining:
+                    tts_engine.queue_sentence(remaining)
                 # After all tokens, print a newline
                 print()
         
@@ -213,6 +276,10 @@ class Dispatcher:
     
     def shutdown(self):
         """Clean up resources."""
+
+        from core.tts import tts_engine
+        tts_engine.shutdown()
+
         self.http_session.close()
         print(f"{CYAN}[Jarvis] Dispatcher shut down.{RESET}")
 
