@@ -97,10 +97,25 @@ class KokoroTTS:
 
             return True
 
-        except ImportError:
-            print(f"{YELLOW}[TTS] Kokoro not installed. To install:{RESET}")
-            print(f"{YELLOW}      pip install kokoro soundfile sounddevice numpy{RESET}")
-            print(f"{YELLOW}      Also install espeak-ng on your system{RESET}")
+        except ModuleNotFoundError as e:
+            root = (e.name or "").split(".", 1)[0]
+            if root == "kokoro":
+                print(f"{YELLOW}[TTS] Kokoro not installed. To install:{RESET}")
+                print(f"{YELLOW}      pip install kokoro soundfile sounddevice numpy{RESET}")
+                print(f"{YELLOW}      Also install espeak-ng on your system{RESET}")
+            else:
+                print(f"{YELLOW}[TTS] Missing dependency (Kokoro needs this module): {e}{RESET}")
+                print(f"{YELLOW}      Try: pip install kokoro --upgrade{RESET}")
+                print(f"{YELLOW}      If the name is 'spacy' or 'Levenshtein', reinstall those in your venv.{RESET}")
+            self.available = False
+            return False
+
+        except ImportError as e:
+            # e.g. DLL load failed on a compiled extension (spaCy's levenshtein.pyd, torch, etc.)
+            print(f"{YELLOW}[TTS] Could not import Kokoro stack: {e}{RESET}")
+            print(f"{YELLOW}      Kokoro is often installed; the failure is usually a blocked native .pyd.{RESET}")
+            print(f"{YELLOW}      On Windows: Smart App Control / WDAC / antivirus can block spaCy extensions.{RESET}")
+            print(f"{YELLOW}      Check: .../site-packages/spacy/matcher/levenshtein.*.pyd (Unblock in Properties if needed).{RESET}")
             self.available = False
             return False
 
