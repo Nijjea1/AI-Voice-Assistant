@@ -122,16 +122,12 @@ class Dispatcher:
         self.http_session = requests.Session()
         
         # Conversation history — the model needs this for context
-        # The system message sets the model's personality
+        # System prompt comes from config.py personality system
+        from config import SYSTEM_PROMPT
         self.messages = [
             {
                 "role": "system",
-                "content": (
-                    "You are Jarvis, a helpful AI assistant. "
-                    "Respond in short, complete sentences. "
-                    "Never use emojis or special characters. "
-                    "Keep responses concise and conversational."
-                ),
+                "content": SYSTEM_PROMPT,
             }
         ]
     
@@ -218,8 +214,8 @@ class Dispatcher:
                 # Check for errors (wrong URL, model not found, etc.)
                 response.raise_for_status()
                 
-                # Print a colored prefix for the response
-                print(f"\n{GREEN}Jarvis:{RESET} ", end="", flush=True)
+                from config import AI_NAME
+                print(f"\n{GREEN}{AI_NAME}:{RESET} ", end="", flush=True)
                 
                 # Read response line by line as Ollama generates tokens
                 for line in response.iter_lines():
