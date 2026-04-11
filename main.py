@@ -80,6 +80,15 @@ def main():
     # ── Step 4: Time-based greeting ──
     # Jarvis greets you differently depending on the time of day,
     # just like the Friday repo does. If voice is enabled, he speaks it.
+
+    from core.tts import tts_engine
+    print(f"{CYAN}[TTS] Loading voice model...{RESET}")
+    if tts_engine.toggle(True):
+        print(f"{GREEN}[TTS] ✓ Voice is ON.{RESET}")
+    else:
+        print(f"{YELLOW}[TTS] ✗ Could not enable voice. Text-only mode.{RESET}")
+
+    # Greet based on time of day (spoken aloud)
     _greet()
 
     # ── Step 5: Chat loop ──

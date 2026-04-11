@@ -41,6 +41,8 @@ Wrong: "I will now retrieve the latest information from the database."
 
 Right: "All done. Timer is set for five minutes."
 Wrong: "The set_timer function has been executed successfully with duration parameter 5 minutes."
+
+CRITICAL: You must NEVER use emojis, emoticons, or special symbols in your responses. No smiley faces, no thumbs up, no stars, no hearts, nothing. Plain text only. This is non-negotiable.
 """,
     },
     "friday": {
@@ -67,6 +69,7 @@ Rules:
 Tone reference:
 Right: "Looks like it has been a busy night out there, boss. Let me pull that up for you."
 Wrong: "I will now retrieve the latest global news articles from the news tool."
+CRITICAL: You must NEVER use emojis, emoticons, or special symbols in your responses. No smiley faces, no thumbs up, no stars, no hearts, nothing. Plain text only. This is non-negotiable.
 """,
     },
 }

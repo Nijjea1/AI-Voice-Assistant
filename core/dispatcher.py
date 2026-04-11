@@ -137,10 +137,12 @@ class Dispatcher:
         print(f"{GRAY}[Dispatcher] Routed → {func_name}{RESET}")
 
         # Step 2: Handle based on function type
-        if func_name in PASSTHROUGH_FUNCTIONS:
+            if func_name in PASSTHROUGH_FUNCTIONS:
             # General chat — send directly to LLM
-            enable_thinking = (func_name == "thinking")
-            self._stream_llm(user_text, enable_thinking)
+            # Note: we always disable explicit thinking mode and let
+            # the model decide naturally. The router's thinking vs
+            # nonthinking classification is unreliable on edge cases.
+            self._stream_llm(user_text, enable_thinking=False)
 
         elif func_name == "get_system_info":
             # System info — gather from all agents, then phrase naturally
