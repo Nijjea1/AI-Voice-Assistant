@@ -137,7 +137,7 @@ class Dispatcher:
         print(f"{GRAY}[Dispatcher] Routed → {func_name}{RESET}")
 
         # Step 2: Handle based on function type
-            if func_name in PASSTHROUGH_FUNCTIONS:
+        if func_name in PASSTHROUGH_FUNCTIONS:
             # General chat — send directly to LLM
             # Note: we always disable explicit thinking mode and let
             # the model decide naturally. The router's thinking vs
@@ -166,15 +166,41 @@ class Dispatcher:
 
     def _route(self, user_text: str):
         """
-        Classify the user's intent using FunctionGemma.
+        Classify the user's intent.
         
-        Returns (function_name, parameters).
-        Falls back to "nonthinking" if the router isn't available.
+        First checks keyword triggers for agents the router wasn't
+        trained on (like news). Then falls through to FunctionGemma
+        for everything else.
+        
+        WHY KEYWORD PRE-ROUTING?
+          FunctionGemma was fine-tuned on a specific set of functions.
+          When we add new agents (news, weather, etc.), the router
+          doesn't know they exist. Keyword matching catches these
+          before the router ever sees them.
+          
+          This is a bridge — eventually you'd retrain the router
+          with the new functions. But keywords work perfectly for now.
         """
+        lower = user_text.lower()
+
+        # ── Keyword pre-routing for agents the router doesn't know ──
+        # Check these BEFORE sending to FunctionGemma
+
+       # News agent triggers
+        news_triggers = [
+            "news", "headlines", "brief me", "catch me up",
+            "what's happening", "whats happening", "what is happening",
+            "what did i miss", "world update", "world monitor",
+            "open world monitor", "briefing",
+        ]
+        if any(trigger in lower for trigger in news_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → get_news{RESET}")
+            return "get_news", {"query": user_text}
+
+        # ── FunctionGemma router for everything else ──
         self._ensure_router()
 
         if self.router is None:
-            # Router failed to load — everything goes to LLM
             return "nonthinking", {"prompt": user_text}
 
         try:
@@ -259,40 +285,39 @@ class Dispatcher:
     # ─────────────────────────────────────────
 
     def _respond_with_context(self, func_name: str, result, user_text: str):
-        """
-        Generate a natural language response with function execution context.
-        
-        After an agent executes (e.g. timer was set), we need Ollama to
-        phrase the result naturally. We send it:
-          "A timer was set for 5 minutes. The user asked: Set a timer for 5 min.
-           Respond naturally and concisely."
-        
-        Ollama then generates: "Done! Your five minute timer is running."
-        """
         if not ensure_qwen_loaded():
             return
         mark_qwen_used()
 
-        # Build context message based on what happened
-        if func_name == "get_system_info" and result.success:
-            # Format system info nicely for the LLM
+        if func_name == "get_news" and result.success:
+            context_msg = (
+                f"You just fetched the latest news for the user. "
+                f"Here are the actual headlines:\n\n"
+                f"{result.message}\n\n"
+                f"Brief the user conversationally, like a news anchor speaking. "
+                f"Weave the stories together naturally in flowing sentences. "
+                f"Do NOT use numbered lists, bullet points, or any list format. "
+                f"Do NOT start sentences with numbers. "
+                f"Speak as if you are talking, not writing a report. "
+                f"Cover the key stories but keep it to 3-4 sentences total. "
+                f"Do not make up any stories. "
+                f"Do not mention a world monitor unless the headlines explicitly say so. "
+                f"Do not say you opened anything unless the headlines say you did."
+            )
+        elif func_name == "get_system_info" and result.success:
             data = result.data or {}
             context_parts = []
             for key, value in data.items():
                 context_parts.append(f"{key}: {json.dumps(value, default=str)}")
             context_msg = "CURRENT SYSTEM STATE:\n" + "\n".join(context_parts)
         else:
-            # Simple action result
             context_msg = (
                 f"Action: {func_name}\n"
                 f"Success: {result.success}\n"
                 f"Result: {result.message}"
             )
 
-        # Combine context with the user's original question
         prompt = f"{context_msg}\n\nUser said: {user_text}\n\nRespond naturally and concisely."
-
-        # Stream the LLM response
         self._stream_llm(prompt, enable_thinking=False)
 
     def _stream_llm(self, user_text: str, enable_thinking: bool = False):
