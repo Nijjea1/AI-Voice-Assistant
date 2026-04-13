@@ -211,6 +211,25 @@ class Dispatcher:
             print(f"{GRAY}[Dispatcher] Route error: {e}{RESET}")
             return "nonthinking", {"prompt": user_text}
 
+        # Timer agent triggers
+        timer_triggers = [
+            "set a timer", "set timer", "timer for", "start a timer",
+            "countdown", "count down",
+        ]
+        if any(trigger in lower for trigger in timer_triggers):
+            # Extract the duration from the query
+            print(f"{GRAY}[Dispatcher] Keyword matched → set_timer{RESET}")
+            return "set_timer", {"duration": user_text}
+
+        # Alarm agent triggers
+        alarm_triggers = [
+            "set an alarm", "set alarm", "alarm for", "alarm at",
+            "wake me up", "wake me at", "remind me at",
+        ]
+        if any(trigger in lower for trigger in alarm_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → set_alarm{RESET}")
+            return "set_alarm", {"time": user_text}
+
     # ─────────────────────────────────────────
     # Agent Execution
     # ─────────────────────────────────────────
