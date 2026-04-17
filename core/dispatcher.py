@@ -197,6 +197,35 @@ class Dispatcher:
             print(f"{GRAY}[Dispatcher] Keyword matched → get_news{RESET}")
             return "get_news", {"query": user_text}
 
+        # Task agent triggers — adding tasks
+        add_task_triggers = [
+            "add to my list", "add to my to do", "add to my todo",
+            "add task", "new task", "remind me to", "i need to",
+            "to do list add", "todo add",
+        ]
+        if any(trigger in lower for trigger in add_task_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → add_task{RESET}")
+            return "add_task", {"text": user_text}
+
+        # Task agent triggers — completing tasks
+        complete_task_triggers = [
+            "mark", "complete task", "finish task", "check off",
+            "task done", "task complete", "i finished",
+        ]
+        if any(trigger in lower for trigger in complete_task_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → complete_task{RESET}")
+            return "complete_task", {"text": user_text}
+
+        # Task agent triggers — listing tasks
+        list_task_triggers = [
+            "my to do", "my todo", "my tasks", "to-do list",
+            "what do i need to do", "show my tasks", "pending tasks",
+            "task list",
+        ]
+        if any(trigger in lower for trigger in list_task_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → list_tasks{RESET}")
+            return "list_tasks", {}
+
         # ── FunctionGemma router for everything else ──
         self._ensure_router()
 
