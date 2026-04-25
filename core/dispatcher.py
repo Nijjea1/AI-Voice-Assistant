@@ -226,6 +226,36 @@ class Dispatcher:
             print(f"{GRAY}[Dispatcher] Keyword matched → list_tasks{RESET}")
             return "list_tasks", {}
 
+        # Calendar agent triggers — creating events
+        create_event_triggers = [
+            "schedule", "create event", "add event", "new event",
+            "book a", "plan a", "set up a meeting",
+            "i have a meeting", "i have an appointment",
+        ]
+        if any(trigger in lower for trigger in create_event_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → create_event{RESET}")
+            return "create_event", {"title": user_text}
+
+        # Calendar agent triggers — reading events
+        read_calendar_triggers = [
+            "my schedule", "my calendar", "what's on my calendar",
+            "whats on my calendar", "what is on my calendar",
+            "any events", "am i free", "what do i have",
+            "coming up", "upcoming events", "plans for",
+        ]
+        if any(trigger in lower for trigger in read_calendar_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → read_calendar{RESET}")
+            return "read_calendar", {"date": user_text}
+
+        # Calendar agent triggers — deleting events
+        delete_event_triggers = [
+            "cancel event", "cancel the", "cancel my",
+            "delete event", "remove event", "drop event",
+        ]
+        if any(trigger in lower for trigger in delete_event_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → delete_event{RESET}")
+            return "delete_event", {"title": user_text}
+
         # ── FunctionGemma router for everything else ──
         self._ensure_router()
 
