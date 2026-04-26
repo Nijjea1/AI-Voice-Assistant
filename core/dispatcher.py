@@ -288,6 +288,26 @@ class Dispatcher:
         if any(trigger in lower for trigger in alarm_triggers):
             print(f"{GRAY}[Dispatcher] Keyword matched → set_alarm{RESET}")
             return "set_alarm", {"time": user_text}
+        
+        # Search agent triggers
+        search_triggers = [
+            "search for", "search the web", "look up", "lookup",
+            "google", "find information", "find info",
+        ]
+        if any(trigger in lower for trigger in search_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → web_search{RESET}")
+            return "web_search", {"query": user_text}
+
+        # Weather agent triggers
+        weather_triggers = [
+            "weather", "temperature", "forecast",
+            "how is it outside", "how's it outside",
+            "do i need an umbrella", "will it rain",
+            "is it cold", "is it hot", "is it warm",
+        ]
+        if any(trigger in lower for trigger in weather_triggers):
+            print(f"{GRAY}[Dispatcher] Keyword matched → get_weather{RESET}")
+            return "get_weather", {}
 
     # ─────────────────────────────────────────
     # Agent Execution
